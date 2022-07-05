@@ -60,6 +60,28 @@ Resources:
       Tags:
       - Key: tj-stack
         Value: production
+
+  tuntijPublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: tuntijVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: "eu-west-2a"
+      Tags:
+      - Key: tuntijstack
+        Value: production
+
+  tuntijPublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: tuntijVPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: "eu-west-2b"
+      Tags:
+      - Key: tuntijstack
+        Value: production
     
 
      

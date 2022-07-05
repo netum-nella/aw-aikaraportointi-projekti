@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Nella, Miika & Razan TJ Template
+
+#tj - Tuntijärjestelmä lyhenne nimeämiseen
+
+# Properties:
+
+# Template Resurssit
+Resources:
+
+  tuntijbucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: tuntijbucket
+
+# aws cloudformation create-stack --stack-name tj-stack --template-body file://cf-template.yaml
+
+  tuntijSQS:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: tuntij-queue-1
+      MessageRetentionPeriod: 300 # 5 minuttia
+
+# aws cloudformation deploy --template-file cf-template.yaml --stack-name tj-stack
+

@@ -5,6 +5,7 @@ Description: Nella, Miika & Razan TJ Template
 
 Parameters:
 
+# Määritellään instanssin tyyppi 
   InstanceTypeParameter:
     Type: String
     Default: t2.micro
@@ -12,14 +13,25 @@ Parameters:
       - t2.micro
     Description: Enter t2.micro, Default is t2.micro.
 
+# Ami-id
   LatestAmiId:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
 
+# Portti 80 auki - sallitaan HTTP yhteys portista 80
+  ApplicationPort:
+    Type: Number
+    Default: 80
+
+  LoadBalancerHTTPPort:
+    Type: Number
+    Default: 80
+    
 
 # Template Resurssit
 Resources:
 
+# Luodaan S3 bucket 
   meidanbucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -27,6 +39,7 @@ Resources:
 
 # aws cloudformation create-stack --stack-name tjstack --template-body file://cf-template.yaml
 
+#Luodaan SQS jono sähköposteille
   tuntijSQS:
     Type: AWS::SQS::Queue
     Properties:
@@ -35,22 +48,17 @@ Resources:
 
 # aws cloudformation deploy --template-file cf-template.yaml --stack-name tjstack
 
+# Luodaan instanssi
   tuntijInstance1:
     Type: 'AWS::EC2::Instance'
     Properties:
-     
+      SecurityGroups:
+        - !Ref tjSecurityGroup
       AvailabilityZone: eu-west-2a
       ImageId: !Ref LatestAmiId
       InstanceType: !Ref InstanceTypeParameter
 
-  tuntijInstance2:
-    Type: 'AWS::EC2::Instance'
-    Properties:
-     
-      AvailabilityZone: eu-west-2b
-      ImageId: !Ref LatestAmiId
-      InstanceType: !Ref InstanceTypeParameter
-
+# Luodaan VPC
   tuntijVPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -61,7 +69,8 @@ Resources:
       - Key: tj-stack
         Value: production
 
-  tuntijPublicSubnetA:
+# Luodaan 1kpl Public Subnet
+  tuntijaPublicSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId:
@@ -72,17 +81,22 @@ Resources:
       - Key: tuntijstack
         Value: production
 
-  tuntijPublicSubnetB:
-    Type: AWS::EC2::Subnet
+# Luodaan Security 
+  tjSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId:
-        Ref: tuntijVPC
-      CidrBlock: 10.0.0.0/24
-      AvailabilityZone: "eu-west-2b"
-      Tags:
-      - Key: tuntijstack
-        Value: production
+      GroupDescription: 'Allow HTTP to client host'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+
+
+
     
 
-     
+
+
 

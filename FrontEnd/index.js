@@ -1,6 +1,8 @@
 "use strict";
-import { time } from "console";
+
 import * as readline from "readline";
+import { snsClient } from "./snsClient.js";
+const { Client } = pkg;
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -92,13 +94,20 @@ rl.on("close", () => {
 // DONE should be able to validate the input
 
 // Sytötä data Databaseen
-function lähetä() {
-  db.query(
-    "INSERT INTO workhours (startdate, starttime, enddate, endtime, sum, project, explanation) VALUES ?",
-    [summary],
-    function (err, result) {
-      if (err) throw err;
-      console.log("Last insert ID:", result.insertId);
-    }
-  );
+await connectDB();
+async function connectDB() {
+  const client = new Client({
+    connectionString: process.env.DB_CONNECTIONSTRING,
+  });
+  function lähetä() {
+    client.query(
+      "INSERT INTO workhours (startdate, starttime, enddate, endtime, sum, project, explanation) VALUES ?",
+      [summary],
+      function (err, result) {
+        if (err) throw err;
+        console.log("Last insert ID:", result.insertId);
+      }
+    );
+  }
+  lähetä();
 }

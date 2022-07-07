@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "sqltools.connections": [
         {
             "previewLimit": 50,
@@ -22,3 +23,7 @@
         }
     ]
 }
+=======
+  "sqltools.connections": []
+}
+>>>>>>> 8d8b004727d18938856dbcd9d539f859ac3cb2dd

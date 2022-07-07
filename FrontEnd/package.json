@@ -1,0 +1,20 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.121.0",
+    "aws-sdk": "^2.1169.0",
+    "dotenv": "^16.0.1",
+    "pg": "^8.7.3",
+    "pkg": "^5.7.0"
+  },
+  "type": "module"
+}

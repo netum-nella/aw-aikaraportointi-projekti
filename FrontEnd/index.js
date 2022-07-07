@@ -1,49 +1,104 @@
 "use strict";
+import { time } from "console";
 import * as readline from "readline";
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-let aloituspäivät = [];
-let aloitusajat = [];
-let lopetuspäivät = [];
-let lopetusajat = [];
-let projektit = [];
-let selitteet = [];
-let kooste = [];
+function getDifferenceInHours(date1, date2) {
+  const diffInMs = Math.abs(date2 - date1);
+  return diffInMs / (1000 * 60 * 60);
+}
 
+let startdays = [];
+let starttimes = [];
+let enddays = [];
+let endtimes = [];
+let projects = [];
+let explanations = [];
+let totalhours = [];
+let summary = [];
+
+function precise(x) {
+  return x.toPrecision(6);
+}
 // Syötteenä tulisi olla työn: Aloituspäivämäärä, Aloitusaika, Lopetuspäiväämäär, Lopetusaika, Projekti, mihin työ kohdistuu, Selite (mitä on tehty)
-
-rl.question(`Aloituspäivämäärä:`, (aloituspäivämäärä) => {
-  aloituspäivät.push(aloituspäivämäärä);
-  rl.question(`Aloitusaika:`, (aloitusaika) => {
-    aloitusajat.push(aloitusaika);
-    rl.question(`Lopetuspäivämäärä:`, (lopetuspäivämäärä) => {
-      lopetuspäivät.push(lopetuspäivämäärä);
-      rl.question(`Lopetusaika:`, (lopetusaika) => {
-        lopetusajat.push(lopetusaika);
-        rl.question(`Projekti:`, (projekti) => {
-          projektit.push(projekti);
-          rl.question(`Selite:`, (selite) => {
-            selitteet.push(selite);
-            rl.close();
+// DONE
+function getInput() {
+  rl.question("Aloituspäivämäärä muodossa 'YYYY/MM/DD': ", (startDay) => {
+    rl.question("Aloitusaika muodossa HH:MM:SS: ", (aAika) => {
+      rl.question("Lopetuspäivämäärä muodossa 'YYYY/MM/DD': ", (lPäivä) => {
+        if (startDay <= lPäivä) {
+          rl.question("Lopetusaika muodossa HH:MM:SS: ", (lAika) => {
+            if (startDay < lPäivä) {
+              endtimes.push(lAika);
+              totalhours.push(0 - parseInt(aAika) + parseInt(lAika));
+            } else if (startDay > lPäivä) {
+              console.log(
+                "Lopetusaika on aikaisempi kuin aloitusaika, poistu komennosta"
+              );
+              rl.close();
+            } else if (aAika < lAika) {
+              endtimes.push(lAika);
+              totalhours.push(parseInt(lAika) - parseInt(aAika));
+            }
+            rl.question("Projekti: ", (projekti) => {
+              rl.question("Selite: ", (selite) => {
+                startdays.push(startDay);
+                starttimes.push(aAika);
+                enddays.push(lPäivä);
+                projects.push(projekti);
+                explanations.push(selite);
+                totalhours.push(
+                  getDifferenceInHours(new Date(startDay), new Date(lPäivä))
+                );
+                rl.close();
+              });
+            });
           });
-        });
+        } else {
+          console.log(
+            "Aloituspäivämäärä on myöhempi kuin lopetuspäivämäärä, poistu komennosta"
+          );
+          rl.close();
+        }
       });
     });
   });
-});
+}
 
+getInput();
 rl.on("close", () => {
-  for (let i = 0; i < aloituspäivät.length; i++) {
-    kooste.push(
-      `Aloitus:${aloituspäivät[i]} ${aloitusajat[i]}, lopetus: ${lopetuspäivät[i]} ${lopetusajat[i]}, projekti sekä selitys: ${projektit[i]} ${selitteet[i]}.`
+  for (let i = 0; i < startdays.length; i++) {
+    summary.push(
+      startdays,
+      starttimes,
+      enddays,
+      endtimes,
+      totalhours,
+      projects,
+      explanations
     );
   }
-  console.log(kooste);
+  console.log(
+    `Aloitus:${startdays[i]} ${starttimes[i]}, lopetus: ${enddays[i]} ${endtimes[i]}, projekti sekä selitys: ${projects[i]}, ${explanations[i]}.`
+  );
+  lähetä();
+  console.log("Tiedot lähetetty tietokantaan");
 });
 
-// Validoi tarvittaessa käyttäjän syötteet oikeellisiksi,  Aloituspäivä ei saa olla lopetuspäivän jälkeen, Dataformaatin oikeellisuus7
+// Validoi tarvittaessa käyttäjän syötteet oikeellisiksi,  Aloituspäivä ei saa olla lopetuspäivän jälkeen, Dataformaatin oikeellisuus
+// DONE should be able to validate the input
 
 // Sytötä data Databaseen
+function lähetä() {
+  db.query(
+    "INSERT INTO workhours (startdate, starttime, enddate, endtime, sum, project, explanation) VALUES ?",
+    [summary],
+    function (err, result) {
+      if (err) throw err;
+      console.log("Last insert ID:", result.insertId);
+    }
+  );
+}

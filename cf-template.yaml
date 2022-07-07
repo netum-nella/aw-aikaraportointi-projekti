@@ -13,6 +13,10 @@ Parameters:
       - t2.micro
     Description: Enter t2.micro, Default is t2.micro.
 
+  SecurityGroupName:
+    Type: String
+    Default: tjSecurityGroup
+
 # Ami-id
   LatestAmiId:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
@@ -78,19 +82,49 @@ Resources:
       CidrBlock: 10.0.1.0/24
       AvailabilityZone: "eu-west-2a"
       Tags:
-      - Key: tuntijstack
-        Value: production
+      - Key: Name
+        Value: SubnetA
+
+  tuntijaPublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: tuntijVPC
+      CidrBlock: 10.0.4.0/24
+      AvailabilityZone: "eu-west-2b"
+      Tags:
+      - Key: Name
+        Value: SubnetB
+
+  tjDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      SubnetIds: 
+      - Ref: 'tuntijaPublicSubnetA'
+      - Ref: 'tuntijaPublicSubnetB'
+      DBSubnetGroupDescription: "Subnet group"
+      Tags:
+      - Key: Name 
+        Value: TJSubnetGroup
 
 # Luodaan Security 
   tjSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: 'Allow HTTP to client host'
+      GroupName: !Ref SecurityGroupName
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
+
+
+
+
+
+
+    
 
 
 

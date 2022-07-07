@@ -1,0 +1,29 @@
+  TuntiRDSDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBSubnetGroupName: 
+        - Ref: tjDBSubnetGroup
+      DBName: TuntiRDSDB
+      AllocatedStorage: '20'
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      MasterUsername: postgres
+      MasterUserPassword: academyprojekti
+    DeletionPolicy: Snapshot
+
+  tjRDSSecurityGroup:
+    Type: AWS::RDS::DBSecurityGroup
+    Properties: 
+      GroupDescription: 'Allow HTTP to client host'
+      GroupName: !Ref SecurityGroupName
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  DBSecurityGroupIngress:
+    Type: AWS::RDS::DBSecurityGroupIngress
+    Properties: 
+      EC2SecurityGroupName: !Ref SecurityGroupName
+        

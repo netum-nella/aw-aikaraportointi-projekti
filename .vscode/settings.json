@@ -1,0 +1,24 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "tt119zls867hnn7.ch0zhmehqxls.eu-west-2.rds.amazonaws.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "tuntij",
+            "database": "TuntiRDSDB",
+            "username": "postgres",
+            "password": "academyprojekti"
+        },
+        {
+            "previewLimit": 50,
+            "server": "tjdatabase-rds.ch0zhmehqxls.eu-west-2.rds.amazonaws.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "uusituntij",
+            "database": "ajanhallinta",
+            "username": "postgres",
+            "password": "academyprojekti"
+        }
+    ]
+}
